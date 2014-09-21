@@ -62,6 +62,7 @@ from lib.core.settings import USER_AGENT_ALIASES
 from lib.core.target import initTargetEnv
 from lib.core.target import setupTargetEnv
 from thirdparty.pagerank.pagerank import get_pagerank
+from thirdparty.tic.tic import get_tic
 
 def _selectInjection():
     """
@@ -308,7 +309,9 @@ def start():
                 if conf.forms:
                     message = "[#%d] form:\n%s %s" % (hostCount, conf.method or HTTPMETHOD.GET, targetUrl)
                 else:
-                    message = "URL %d:\n%s %s%s" % (hostCount, conf.method or HTTPMETHOD.GET, targetUrl, " (PageRank: %s)" % get_pagerank(targetUrl) if conf.googleDork and conf.pageRank else "")
+                    message = "URL %d:\n%s %s%s %s" % (hostCount, conf.method or HTTPMETHOD.GET, targetUrl,
+                                                    " (PageRank: %s)" % get_pagerank(targetUrl) if conf.googleDork and conf.pageRank else "",
+                                                    "(tIC: %s)" % get_tic(targetUrl) if conf.googleDork and conf.tic else "")
 
                 if conf.cookie:
                     message += "\nCookie: %s" % conf.cookie

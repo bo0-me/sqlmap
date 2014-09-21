@@ -694,6 +694,11 @@ def cmdLineParser():
                                   action="store_true",
                                   help="Display page rank (PR) for Google dork results")
 
+        miscellaneous.add_option("--tic", dest="tic",
+                                  action="store_true",
+                                  help="Display Yandex Thematic index of citing (tIC) for Google dork results")
+
+
         miscellaneous.add_option("--purge-output", dest="purgeOutput",
                                   action="store_true",
                                   help="Safely remove all content from output directory")
