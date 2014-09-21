@@ -144,6 +144,7 @@ from thirdparty.colorama.initialise import init as coloramainit
 from thirdparty.keepalive import keepalive
 from thirdparty.oset.pyoset import oset
 from thirdparty.socks import socks
+from thirdparty.tic.tic import get_tic
 from xml.etree.ElementTree import ElementTree
 
 authHandler = urllib2.BaseHandler()
@@ -571,6 +572,7 @@ def _setGoogleDorking():
 
         return links
 
+
     while True:
         links = retrieve()
 
@@ -598,6 +600,28 @@ def _setGoogleDorking():
                 raise SqlmapSilentQuitException
             else:
                 conf.googlePage += 1
+
+
+def _setTicOrderTargets():
+    """
+        This function try to sort multiple targets urls by Yandex tIC
+    """
+    if conf.tic:
+        logger.info("Order targets by tIC")
+        targets = [target for target in kb.targets]
+        kb.targets.clear()
+        for i in xrange(len(targets)):
+            tic = get_tic(targets[i][0])
+            if conf.tic > tic:
+                logger.warning("SKIP!:%s: %s" % (tic, targets[i][0]))
+                continue
+            logger.info("%s: %s" % (tic, targets[i][0]))
+            targets[i] = targets[i], tic
+
+
+        for target in sorted(targets, key=lambda target:target[1], reverse=True):
+            kb.targets.add(tuple(target[0]))
+
 
 def _setBulkMultipleTargets():
     if not conf.bulkFile:
@@ -2318,6 +2342,7 @@ def init():
         _setGoogleDorking()
         _setBulkMultipleTargets()
         _setSitemapTargets()
+        _setTicOrderTargets()
         _urllib2Opener()
         _checkTor()
         _setCrawler()

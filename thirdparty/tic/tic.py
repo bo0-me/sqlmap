@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 #  Script for getting Yandex tIC of page
 #
@@ -6,22 +7,22 @@
 
 import urllib
 import xml.etree.ElementTree as ET
-import json
 
 def get_tic(url):
-    _ = 'http://bar-navig.yandex.ru/u'
-    params = urllib.urlencode({
+    _ = 'http://bar-navig.yandex.ru/u?%s'
+    params = {
         'ver':2,
         'show':1,
-        'url': _
-    })
+        'url': url,
+    }
 
-    # try:
-    r = urllib.urlopen(_, data=params)
+    link = _ % urllib.urlencode(params.items())
+
+    r = urllib.urlopen(link)
 
     if r.code == 200:
         tree = ET.fromstring(r.read()).find('tcy')
-        rank = tree.attrib['rang']
+        rank = int(tree.attrib['rang'])
     else:
         rank = 'Err'
     return rank

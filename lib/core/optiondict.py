@@ -213,7 +213,7 @@ optDict = {
                                "googlePage":        "integer",
                                "mobile":            "boolean",
                                "pageRank":          "boolean",
-                               "tic":               "boolean",
+                               "tic":               "integer",
                                "purgeOutput":       "boolean",
                                "smart":             "boolean",
                                "wizard":            "boolean",
