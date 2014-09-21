@@ -20,7 +20,7 @@ _defaults = {
    "threads":      1,
    "level":        1,
    "risk":         1,
-   "tic":          -1,
+   "ticFilter":    -1,
    "dumpFormat":   "CSV",
    "tech":         "BEUSTQ",
    "torType":      "HTTP",

@@ -608,19 +608,21 @@ def _setTicOrderTargets():
     """
     if conf.tic:
         logger.info("Order targets by tIC")
-        targets = [target for target in kb.targets]
+        targets, targetTic = [target for target in kb.targets], {}
         kb.targets.clear()
+
         for i in xrange(len(targets)):
-            tic = get_tic(targets[i][0])
-            if conf.tic > tic:
-                logger.warning("SKIP!:%s: %s" % (tic, targets[i][0]))
+            target = targets[i][0]
+            tic = get_tic(target)
+            if conf.ticFilter+1 >= tic:
+                logger.warning("SKIP!: %s" % target)
+
                 continue
-            logger.info("%s: %s" % (tic, targets[i][0]))
-            targets[i] = targets[i], tic
+            logger.info("%s: %s" % (tic, target))
+            targetTic[targets[i]] = tic
 
-
-        for target in sorted(targets, key=lambda target:target[1], reverse=True):
-            kb.targets.add(tuple(target[0]))
+        for target in sorted(targetTic.items(), key=lambda x: x[1], reverse=True):
+            kb.targets.add(target[0])
 
 
 def _setBulkMultipleTargets():

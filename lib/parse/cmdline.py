@@ -694,9 +694,11 @@ def cmdLineParser():
                                   action="store_true",
                                   help="Display page rank (PR) for Google dork results")
 
-        miscellaneous.add_option("--tic", dest="tic", type="int",
-                                  help="Display Yandex tIC for multiple targets, order and filter by value gather 0 (default %d)" % defaults.tic)
+        miscellaneous.add_option("--tic", dest="tic", action="store_true",
+                                  help="Display and order Yandex tIC for multiple targets")
 
+        miscellaneous.add_option("--tic-filter", dest="ticFilter", type="int",
+                                  help="Filter by tIC value gather or equal 0 (default %d)" % defaults.ticFilter)
 
         miscellaneous.add_option("--purge-output", dest="purgeOutput",
                                   action="store_true",
