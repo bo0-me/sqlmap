@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 def get_tic(url):
     _ = 'http://bar-navig.yandex.ru/u?ver=2&show=1&url=%s'
 
-    r = urllib.urlopen(_ % urllib.unquote(url).encode("ascii"))
+    r = urllib.urlopen(_ % urllib.unquote(url).encode("utf8"))
     try:
         if r.code == 200:
             tree = ET.fromstring(r.read()).find('tcy')
