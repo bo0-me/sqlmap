@@ -9,7 +9,7 @@ import urllib
 import xml.etree.ElementTree as ET
 import logging
 
-def get_tic(url):
+def tic(url):
     _ = 'http://bar-navig.yandex.ru/u?ver=2&show=1&url=%s'
 
     r = urllib.urlopen(_ % urllib.unquote(url).encode("utf8"))

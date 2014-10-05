@@ -371,6 +371,10 @@ TURN_OFF_RESUME_INFO_LIMIT = 20
 # Strftime format for results file used in multiple target mode
 RESULTS_FILE_FORMAT = "results-%m%d%Y_%I%M%p.csv"
 
+# Strftime format for results file used in multiple target mode
+RESULTS_ADMINPANEL_FILE_FORMAT = "admin-%m%d%Y_%I%M%p.csv"
+
+
 # Official web page with the list of Python supported codecs
 CODECS_LIST_PAGE = "http://docs.python.org/library/codecs.html#standard-encodings"
 

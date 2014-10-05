@@ -144,7 +144,6 @@ from thirdparty.colorama.initialise import init as coloramainit
 from thirdparty.keepalive import keepalive
 from thirdparty.oset.pyoset import oset
 from thirdparty.socks import socks
-from thirdparty.tic.tic import get_tic
 from xml.etree.ElementTree import ElementTree
 
 authHandler = urllib2.BaseHandler()
@@ -601,29 +600,29 @@ def _setGoogleDorking():
             else:
                 conf.googlePage += 1
 
-
 def _setTicOrderTargets():
     """
         This function try to sort multiple targets urls by Yandex tIC
     """
-    if conf.tic:
-        logger.info("Order targets by tIC")
-        targets, targetTic = [target for target in kb.targets], {}
-        kb.targets.clear()
+    if not conf.tic:
+        return
 
-        for i in xrange(len(targets)):
-            target = targets[i][0]
-            tic = get_tic(target)
-            if conf.ticFilter+1 >= tic:
-                logger.warning("SKIP!: %s" % target)
+    logger.info("Order targets by tIC")
+    targets, targetTic = [target for target in kb.targets], {}
+    kb.targets.clear()
 
-                continue
-            logger.info("%s: %s" % (tic, target))
-            targetTic[targets[i]] = tic
+    for i in xrange(len(targets)):
+        target = targets[i][0]
+        tic = tic(target)
+        if conf.ticFilter+1 >= tic:
+            logger.warning("SKIP!: %s" % target)
 
-        for target in sorted(targetTic.items(), key=lambda x: x[1], reverse=True):
-            kb.targets.add(target[0])
+            continue
+        logger.info("%s: %s" % (tic, target))
+        targetTic[targets[i]] = tic
 
+    for target in sorted(targetTic.items(), key=lambda x: x[1], reverse=True):
+        kb.targets.add(target[0])
 
 def _setBulkMultipleTargets():
     if not conf.bulkFile:
@@ -1633,6 +1632,7 @@ def _setConfAttributes():
     conf.proxyList = []
     conf.resultsFilename = None
     conf.resultsFP = None
+    conf.resultsAFP = None
     conf.scheme = None
     conf.tests = []
     conf.trafficFP = None
@@ -2287,6 +2287,7 @@ def _basicOptionValidation():
         if not os.path.exists(conf.loadCookies):
             errMsg = "cookies file '%s' does not exist" % conf.loadCookies
             raise SqlmapFilePathException(errMsg)
+
 
 def _resolveCrossReferences():
     lib.core.threads.readInput = readInput

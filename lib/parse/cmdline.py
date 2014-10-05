@@ -471,6 +471,9 @@ def cmdLineParser():
         brute.add_option("--common-columns", dest="commonColumns", action="store_true",
                                help="Check existence of common columns")
 
+        brute.add_option("-n", "--admin-panel", dest="adminPanel", action="store_true",
+                               help="Check of admin panel. Founded URLs output in separate dir with a results")
+
         # User-defined function options
         udf = OptionGroup(parser, "User-defined function injection", "These "
                           "options can be used to create custom user-defined "
@@ -695,10 +698,15 @@ def cmdLineParser():
                                   help="Display page rank (PR) for Google dork results")
 
         miscellaneous.add_option("--tic", dest="tic", action="store_true",
-                                  help="Display and order Yandex tIC for multiple targets")
+                                  help="Display and order multiple targets by Yandex tIC")
 
         miscellaneous.add_option("--tic-filter", dest="ticFilter", type="int",
                                   help="Filter by tIC value gather or equal 0 (default %d)" % defaults.ticFilter)
+
+        miscellaneous.add_option("--admin-only", dest="adminPanelOnly",
+                                  action="store_true",
+                                  help="Search admin panel on target only. No others detections and injections."
+                                       " Used only with <--admin-panel> option.")
 
         miscellaneous.add_option("--purge-output", dest="purgeOutput",
                                   action="store_true",

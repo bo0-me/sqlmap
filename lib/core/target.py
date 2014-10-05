@@ -52,6 +52,7 @@ from lib.core.settings import PROBLEMATIC_CUSTOM_INJECTION_PATTERNS
 from lib.core.settings import REFERER_ALIASES
 from lib.core.settings import RESTORE_MERGED_OPTIONS
 from lib.core.settings import RESULTS_FILE_FORMAT
+from lib.core.settings import RESULTS_ADMINPANEL_FILE_FORMAT
 from lib.core.settings import SUPPORTED_DBMS
 from lib.core.settings import UNENCODED_ORIGINAL_VALUE
 from lib.core.settings import UNICODE_ENCODING
@@ -465,6 +466,21 @@ def _setResultsFile():
 
         logger.info("using '%s' as the CSV results file in multiple targets mode" % conf.resultsFilename)
 
+def _setResultsAdminPanelFile():
+    """
+    Create admin panel search results file for storing in a multiple target mode.
+    """
+
+    if not conf.multipleTargets or not conf.adminPage:
+        return
+
+    if not conf.resultsAFP:
+        conf.adminFilename = os.path.join(paths.SQLMAP_OUTPUT_PATH, time.strftime(RESULTS_ADMINPANEL_FILE_FORMAT).lower())
+        conf.resultsAFP = codecs.open(conf.adminFilename, "w+", UNICODE_ENCODING, buffering=0)
+        conf.resultsAFP.writelines("Target URL,Admin Page URL%s" % os.linesep)
+
+        logger.info("using '%s' as the CSV file for the founded admin pages in multiple targets mode" % conf.adminFilename)
+
 def _createFilesDir():
     """
     Create the file directory.
@@ -619,4 +635,5 @@ def setupTargetEnv():
     _setHashDB()
     _resumeHashDBValues()
     _setResultsFile()
+    _setResultsAdminPanelFile()
     _setAuthCred()

@@ -215,6 +215,8 @@ optDict = {
                                "pageRank":          "boolean",
                                "tic":               "boolean",
                                "ticFilter":         "integer",
+                               "adminPanel":        "boolean",
+                               "adminPanelOnly":    "boolean",
                                "purgeOutput":       "boolean",
                                "smart":             "boolean",
                                "wizard":            "boolean",

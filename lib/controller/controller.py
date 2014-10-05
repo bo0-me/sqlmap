@@ -22,6 +22,7 @@ from lib.controller.checks import identifyWaf
 from lib.core.agent import agent
 from lib.core.common import dataToStdout
 from lib.core.common import extractRegexResult
+from lib.core.common import getFileItems
 from lib.core.common import getFilteredPageContent
 from lib.core.common import getPublicTypeMembers
 from lib.core.common import getUnicode
@@ -38,6 +39,7 @@ from lib.core.common import urldecode
 from lib.core.data import conf
 from lib.core.data import kb
 from lib.core.data import logger
+from lib.core.data import paths
 from lib.core.enums import CONTENT_TYPE
 from lib.core.enums import HASHDB_KEYS
 from lib.core.enums import HEURISTIC_TEST
@@ -61,8 +63,11 @@ from lib.core.settings import REFERER_ALIASES
 from lib.core.settings import USER_AGENT_ALIASES
 from lib.core.target import initTargetEnv
 from lib.core.target import setupTargetEnv
+from lib.parse.sitemap import parseSitemap
 from thirdparty.pagerank.pagerank import get_pagerank
-from thirdparty.tic.tic import get_tic
+from thirdparty.tic.tic import tic
+from thirdparty.adminpanel.adminpanel import searchadminpanel
+
 
 def _selectInjection():
     """
@@ -238,6 +243,41 @@ def _saveToResultsFile():
         line = "%s,,,%s" % (conf.url, os.linesep)
         conf.resultsFP.writelines(line)
 
+def _searchAdminPanel():
+    if not conf.adminPanel:
+        return
+
+    if not hasattr(kb, "commonAdmin"):
+        debugMsg = "loading common admin page terms "
+        debugMsg += "file '%s'" % paths.COMMON_ADMIN
+        logger.debug(debugMsg)
+
+        try:
+            kb.commonAdmin = getFileItems(paths.COMMON_ADMIN)
+        except IOError:
+            warnMsg = "unable to read Common Admin page terms"
+            warnMsg += "file '%s'" % paths.COMMON_ADMIN
+            logger.warn(warnMsg)
+
+            return
+
+    if not any((conf.bulkFile, conf.sitemapUrl)):
+        searchadminpanel(conf.url)
+    else:
+        if conf.bulkFile:
+            targets = getFileItems(conf.bulkFile)
+        else:
+            targets = parseSitemap(conf.sitemapUrl)
+        for i in xrange(len(targets)):
+            try:
+                target = targets[i]
+                searchadminpanel(target)
+
+            except Exception, ex:
+                errMsg = "problem occurred while searching admin panel at '%s' ('%s')" % (target, ex)
+                logger.error(errMsg)
+
+
 def start():
     """
     This function calls a function that performs checks on both URL
@@ -311,7 +351,7 @@ def start():
                 else:
                     message = "URL %d:\n%s %s%s %s" % (hostCount, conf.method or HTTPMETHOD.GET, targetUrl,
                                                     " (PageRank: %s)" % get_pagerank(targetUrl) if conf.googleDork and conf.pageRank else "",
-                                                    "(tIC: %s)" % get_tic(targetUrl) if conf.googleDork and conf.tic else "")
+                                                    "(tIC: %s)" % tic(targetUrl) if conf.googleDork and conf.tic else "")
 
                 if conf.cookie:
                     message += "\nCookie: %s" % conf.cookie
@@ -575,7 +615,11 @@ def start():
                 _showInjections()
                 _selectInjection()
 
+
             if kb.injection.place is not None and kb.injection.parameter is not None:
+                if conf.adminPanel:
+                    _searchAdminPanel()
+
                 if conf.multipleTargets:
                     message = "do you want to exploit this SQL injection? [Y/n] "
                     exploit = readInput(message, default="Y")
@@ -586,6 +630,7 @@ def start():
 
                 if condition:
                     action()
+
 
         except KeyboardInterrupt:
             if conf.multipleTargets:
